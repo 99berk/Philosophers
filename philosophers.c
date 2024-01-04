@@ -6,12 +6,13 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/03 11:38:25 by bakgun            #+#    #+#             */
-/*   Updated: 2024/01/04 15:11:58 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/01/04 18:03:18 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 #include <unistd.h>
+#include <stdio.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -122,14 +123,55 @@ int	set_and_ready(t_var *args, char **argv)
 	return (1);
 }
 
+int	check_dead(t_var *args)
+{
+	pthread_mutex_lock(&args->mutex);
+	if (args->philosopher_dead == 1)
+		return (pthread_mutex_unlock(&args->mutex), 1);
+	return (pthread_mutex_unlock(&args->mutex), 0);	
+}
+
+void	print_philo(t_var *args, char *str, int i)
+{
+	unsigned long	time;
+
+	time = get_time() - args->s_time;
+	printf("%ld philo[%d] %s", time, i, str);
+}
+
+int	philo_takes_forks(t_var *args, int i)
+{
+	pthread_mutex_lock(args->philosophers[i].fork);
+	if (!check_dead(args))
+		print_philo(args, "has taken a fork", i);
+	if (pthread_mutex_lock(args->philosophers[i + 1].fork) != 0)
+		return (pthread_mutex_unlock(args->philosophers[i].fork), 1);
+	if (!check_dead(args))
+		print_philo(args, "has taken a fork", i);
+}
+
+void	philo_is_eating(t_var *args, int i)
+{
+	print_philo(args, "is eating", i);
+	pthread_mutex_lock(&args->mutex);
+	args->philosophers[i].last_ate = get_time() - args->s_time;
+}
+
 void	*philo_life(void *args)
 {
-	t_pihlo	*philos;
-	
+	t_var	*philos;
+	int		i;
+
+	i = 0;
 	philos = (t_pihlo *)args;
-	while ()
+	while (philos->philosopher_dead == 0)
 	{
-		
+		if (check_dead(philos))
+			return (0);
+		philo_takes_forks(args, i);
+		if (check_dead(philos))
+			return (pthread_mutex_unlock(philos->philosophers[i].fork), pthread_mutex_unlock(philos->philosophers[i + 1].fork), 0);
+		philo_is_eating(args, i);
 	}
 }
 
