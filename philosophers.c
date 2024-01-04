@@ -6,13 +6,15 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/03 11:38:25 by bakgun            #+#    #+#             */
-/*   Updated: 2024/01/03 18:06:42 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/01/04 15:11:58 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 #include <unistd.h>
 #include <sys/time.h>
+#include <stdlib.h>
+#include <pthread.h>
 
 unsigned long	get_time(void)
 {
@@ -72,6 +74,36 @@ int	check_args(char **argv)
 	return (1);
 }
 
+int	mutex_create(t_var *args)
+{
+	int	i;
+
+	i = -1;
+	args->fork_mutex = malloc(sizeof(pthread_mutex_t) * args->number_of_philosophers);
+	if (!args->fork_mutex)
+		return (0);
+	while (++i < args->number_of_philosophers)
+		pthread_mutex_init(&args->fork_mutex[i], NULL);
+	pthread_mutex_init(&args->mutex, NULL);
+	return (1);
+}
+
+int	philo_create(t_var *args)
+{
+	int	i;
+
+	i = -1;
+	args->philosophers = malloc(sizeof(t_pihlo) * args->number_of_philosophers);
+	if (!args->philosophers)
+		return (0);
+	while (++i < args->number_of_philosophers)
+	{
+		args->philosophers[i].fork = &args->fork_mutex[i];
+		args->philosophers[i].last_ate = 0;
+	}
+	return (1);
+}
+
 int	set_and_ready(t_var *args, char **argv)
 {
 	args->number_of_philosophers = philo_atoi(argv[1], 0);
@@ -83,7 +115,35 @@ int	set_and_ready(t_var *args, char **argv)
 	else
 		args->number_of_times_each_philosopher_must_eat = -1;
 	args->philosopher_dead = 0;
+	if (mutex_create(args) == 0)
+		return (0);
+	if (philo_create(args) == 0)
+		return (0);
 	return (1);
+}
+
+void	*philo_life(void *args)
+{
+	t_pihlo	*philos;
+	
+	philos = (t_pihlo *)args;
+	while ()
+	{
+		
+	}
+}
+
+strat_philos(t_var *args)
+{
+	int	i;
+
+	i = -1;
+	args->s_time = get_time();
+	while (++i < args->number_of_philosophers)
+		pthread_create(&args->philosophers[i].philo_thread_id, NULL, philo_life, (void *)args);
+	i = -1;
+	while (++i < args->number_of_philosophers)
+		pthread_join(args->philosophers[i].philo_thread_id, NULL);
 }
 
 int	main(int argc, char **argv)
@@ -96,7 +156,7 @@ int	main(int argc, char **argv)
 		{
 			if (set_and_ready(&args, argv))
 			{
-				
+				start_philos(args);
 			}
 		}
 	}
