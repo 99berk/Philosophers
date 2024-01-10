@@ -6,7 +6,7 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/03 11:38:25 by bakgun            #+#    #+#             */
-/*   Updated: 2024/01/04 18:03:18 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/01/10 18:01:56 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void	print_philo(t_var *args, char *str, int i)
 	unsigned long	time;
 
 	time = get_time() - args->s_time;
-	printf("%ld philo[%d] %s", time, i, str);
+	printf("%ld philo[%d] %s\n", time, i, str);
 }
 
 int	philo_takes_forks(t_var *args, int i)
@@ -148,6 +148,7 @@ int	philo_takes_forks(t_var *args, int i)
 		return (pthread_mutex_unlock(args->philosophers[i].fork), 1);
 	if (!check_dead(args))
 		print_philo(args, "has taken a fork", i);
+	return (0);
 }
 
 void	philo_is_eating(t_var *args, int i)
@@ -155,6 +156,25 @@ void	philo_is_eating(t_var *args, int i)
 	print_philo(args, "is eating", i);
 	pthread_mutex_lock(&args->mutex);
 	args->philosophers[i].last_ate = get_time() - args->s_time;
+	
+	pthread_mutex_unlock(&args->mutex);
+	usleep(args->time_to_eat * 1000);
+	pthread_mutex_lock(&args->mutex);
+	if (args->philosophers[i].eat_time != -1)
+		args->philosophers[i].eat_time++;
+	pthread_mutex_unlock(&args->mutex);
+	pthread_mutex_unlock(args->philosophers[i].fork);
+}
+
+void	philo_is_sleeping(t_var *args, int i)
+{
+	print_philo(args, "is sleeping", i);
+	usleep(args->time_to_sleep * 1000);
+}
+
+void	philo_is_thinking(t_var *args, int i)
+{
+	print_philo(args, "is thinking", i);
 }
 
 void	*philo_life(void *args)
@@ -163,19 +183,30 @@ void	*philo_life(void *args)
 	int		i;
 
 	i = 0;
-	philos = (t_pihlo *)args;
+	philos = (t_var *)args;
 	while (philos->philosopher_dead == 0)
 	{
 		if (check_dead(philos))
 			return (0);
 		philo_takes_forks(args, i);
 		if (check_dead(philos))
-			return (pthread_mutex_unlock(philos->philosophers[i].fork), pthread_mutex_unlock(philos->philosophers[i + 1].fork), 0);
+		{
+			pthread_mutex_unlock(philos->philosophers[i].fork);
+			pthread_mutex_unlock(philos->philosophers[i + 1].fork);
+			return (0);
+		}
 		philo_is_eating(args, i);
+		if (check_dead(philos))
+			return (0);
+		philo_is_sleeping(args, i);
+		if (check_dead(philos))
+			return (0);
+		philo_is_thinking(args, i);
 	}
+	return (0);
 }
 
-strat_philos(t_var *args)
+void	start_philos(t_var *args)
 {
 	int	i;
 
@@ -198,7 +229,7 @@ int	main(int argc, char **argv)
 		{
 			if (set_and_ready(&args, argv))
 			{
-				start_philos(args);
+				start_philos(&args);
 			}
 		}
 	}
