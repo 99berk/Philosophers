@@ -1,40 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   death.c                                            :+:      :+:    :+:   */
+/*   smell_of_death.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aaltinto <aaltinto@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/08 16:22:21 by aaltinto          #+#    #+#             */
-/*   Updated: 2024/02/08 16:23:46 by aaltinto         ###   ########.fr       */
+/*   Created: 2024/03/01 14:55:36 by bakgun            #+#    #+#             */
+/*   Updated: 2024/03/01 16:20:11 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	is_dead(t_philo *philo)
+int	check_dead(t_philo *philo)
 {
 	if (pthread_mutex_lock(&philo->vars->death) != 0)
-		return (err_msg("Error\nMutex can't be locked"), 1);
+		return (print_error("Error\nMutex can't be locked"), 1);
 	if (philo->vars->is_dead == 1)
 		return (pthread_mutex_unlock(&philo->vars->death), 1);
 	return (pthread_mutex_unlock(&philo->vars->death), 0);
 }
 
-static void	die(t_vars *vars, int index)
+void	*die(t_vars *vars, int index, int print)
 {
 	size_t	die_time;
 
+	if (check_dead(&vars->philos[0]))
+		return (NULL);
 	if (pthread_mutex_lock(&vars->death) != 0)
-		err_msg("Error\nMutex can't be locked");
+		return (print_error("Error\nMutex can't be locked"), NULL);
 	vars->is_dead = 1;
 	die_time = get_time();
 	pthread_mutex_unlock(&vars->death);
-	ft_usleep(10);
-	print_time("\033[0;31mdied", index, vars, die_time);
+	ft_usleep(10, &vars->philos[0]);
+	if (print)
+		print_time("\033[0;31mdied", index, vars, die_time);
+	return (NULL);
 }
 
-static int	check_all(t_vars *vars)
+int	ctrl_max_eat(t_vars *vars)
 {
 	int	i;
 	int	counter;
@@ -53,30 +57,31 @@ static int	check_all(t_vars *vars)
 	return (pthread_mutex_unlock(&vars->eat), 0);
 }
 
-void	*death_note(void *arg)
+void	*smell_of_death(void *arg)
 {
 	t_vars	*vars;
-	int		i;
 	int		time;
 
 	vars = (t_vars *)arg;
 	while (1)
 	{
 		if (pthread_mutex_lock(&vars->death) != 0)
-			return (err_msg("Error\nMutex can't be locked"), NULL);
+			return (print_error("Error\nMutex can't be locked"), NULL);
 		if (vars->max_eat > -1)
-			if (check_all(vars))
+			if (ctrl_max_eat(vars))
 				return (pthread_mutex_unlock(&vars->death), NULL);
 		pthread_mutex_unlock(&vars->death);
-		i = -1;
-		while (++i < vars->count)
+		vars->death_i = -1;
+		if (check_dead(&vars->philos[0]))
+			return (NULL);
+		while (++vars->death_i < vars->count)
 		{
 			if (pthread_mutex_lock(&vars->eat) != 0)
-				return (err_msg("Error\nMutex can't be locked"), NULL);
-			time = get_time() - vars->philos[i].last_ate;
+				return (print_error("Error\nMutex can't be locked"), NULL);
+			time = get_time() - vars->philos[vars->death_i].last_ate;
 			pthread_mutex_unlock(&vars->eat);
 			if (time > vars->time_to_die)
-				return (die(vars, i + 1), NULL);
+				return (die(vars, vars->death_i + 1, 1));
 		}
 	}
 }

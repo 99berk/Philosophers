@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   eat_sleep_repeat.c                                 :+:      :+:    :+:   */
+/*   life_of_philo.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aaltinto <aaltinto@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/29 17:34:13 by aaltinto          #+#    #+#             */
-/*   Updated: 2024/02/12 13:50:46 by aaltinto         ###   ########.fr       */
+/*   Created: 2024/03/01 14:55:25 by bakgun            #+#    #+#             */
+/*   Updated: 2024/03/01 16:34:52 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,36 +16,37 @@
 int	take_fork(t_philo *philo)
 {
 	if (pthread_mutex_lock(&philo->l_fork) != 0)
-		return (err_msg("Error\nFork can't be locked"), 1);
-	if (is_dead(philo))
+		return (print_error("Error\nFork can't be locked"), 1);
+	if (check_dead(philo))
 		return (pthread_mutex_unlock(&philo->l_fork), 1);
 	print_time("has taken a fork", philo->index, philo->vars, get_time());
 	if (philo->vars->count == 1)
 	{
-		while (!is_dead(philo))
+		while (!check_dead(philo))
 			usleep(100);
 		return (pthread_mutex_unlock(&philo->l_fork), 1);
 	}
 	if (pthread_mutex_lock(philo->r_fork) != 0)
-		return (err_msg("Error\nMutex can't be locked"), 1);
-	if (is_dead(philo))
+		return (print_error("Error\nFork can't be locked"), 1);
+	if (check_dead(philo))
 		return (pthread_mutex_unlock(&philo->l_fork),
 			pthread_mutex_unlock(philo->r_fork), 1);
-	return (print_time("has taken a fork", philo->index, philo->vars,
-			get_time()), 0);
+	return (print_time("has take a fork", philo->index,
+			philo->vars, get_time()), 0);
 }
 
 int	eat(t_philo *philo)
 {
-	if (is_dead(philo))
+	if (check_dead(philo))
 		return (pthread_mutex_unlock(&philo->l_fork),
 			pthread_mutex_unlock(philo->r_fork), 1);
-	print_time("\033[0;32mis eating", philo->index, philo->vars, get_time());
+	print_time("\033[0;32mis eating", philo->index,
+		philo->vars, get_time());
 	if (ft_usleep(philo->vars->time_to_eat, philo))
 		return (pthread_mutex_unlock(&philo->l_fork),
 			pthread_mutex_unlock(philo->r_fork), 1);
 	if (pthread_mutex_lock(&philo->vars->eat) != 0)
-		return (err_msg("Error\nMutex can't be locked"), 1);
+		return (print_error("Error\nFork can't be locked"), 1);
 	philo->last_ate = get_time();
 	pthread_mutex_unlock(&philo->vars->eat);
 	pthread_mutex_unlock(&philo->l_fork);
@@ -53,20 +54,20 @@ int	eat(t_philo *philo)
 	return (philo->eat_count++, 0);
 }
 
-int	sleep_think(t_philo *philo)
+int	sleep_and_think(t_philo *philo)
 {
-	if (is_dead(philo))
+	if (check_dead(philo))
 		return (1);
 	print_time("is sleeping", philo->index, philo->vars, get_time());
 	if (ft_usleep(philo->vars->time_to_sleep, philo))
 		return (1);
-	if (is_dead(philo))
+	if (check_dead(philo))
 		return (1);
 	print_time("is thinking", philo->index, philo->vars, get_time());
 	return (0);
 }
 
-void	*eat_sleep_repeat(void *arg)
+void	*life_of_philo(void *arg)
 {
 	t_philo	*philo;
 	t_vars	*vars;
@@ -77,11 +78,11 @@ void	*eat_sleep_repeat(void *arg)
 		ft_usleep(10, philo);
 	while (1)
 	{
-		if (is_dead(philo) || take_fork(philo))
+		if (check_dead(philo) || take_fork(philo))
 			return (die(vars, 0, 0));
-		if (is_dead(philo) || eat(philo))
+		if (check_dead(philo) || eat(philo))
 			return (die(vars, 0, 0));
-		if (is_dead(philo) || sleep_think(philo))
+		if (check_dead(philo) || sleep_and_think(philo))
 			return (die(vars, 0, 0));
 	}
 	return (NULL);

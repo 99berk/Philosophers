@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/26 11:18:59 by aaltinto          #+#    #+#             */
-/*   Updated: 2024/02/15 17:21:46 by bakgun           ###   ########.fr       */
+/*   Created: 2024/03/01 11:58:19 by bakgun            #+#    #+#             */
+/*   Updated: 2024/03/01 16:31:49 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ typedef struct s_philo
 	pthread_mutex_t	l_fork;
 	pthread_mutex_t	*r_fork;
 	struct s_vars	*vars;
-	int				index;
-}		t_philo;
+	int				index;			
+}	t_philo;
 
 typedef struct s_vars
 {
@@ -44,23 +44,16 @@ typedef struct s_vars
 	pthread_mutex_t	eat;
 	size_t			start_time;
 	t_philo			*philos;
-}		t_vars;
+}	t_vars;
 
+void	print_error(char *str);
 int		ft_atoi(char *num);
-void	err_msg(char *msg);
 size_t	get_time(void);
-void	print_time(char *msg, int i, t_vars *vars, size_t current);
-int		ft_usleep(size_t milliseconds, t_philo *philo);
-
-void	abort_mission(t_vars *vars, pthread_t **threads_id);
-
-void	*death_note(void *arg);
+void	*life_of_philo(void *arg);
+int		ft_usleep(size_t miliseconds, t_philo *philo);
+int		check_dead(t_philo *philo);
+void	print_time(char *str, int i, t_vars *vars, size_t current);
 void	*die(t_vars *vars, int index, int print);
-int		is_dead(t_philo *philo);
-
-void	*eat_sleep_repeat(void *arg);
-
-int		philo_fill(int argc, char **argv, t_vars *vars);
-int		philo_mutex_init(t_vars *vars, int i);
+void	*smell_of_death(void *arg);
 
 #endif
