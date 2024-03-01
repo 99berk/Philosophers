@@ -6,7 +6,7 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 14:55:25 by bakgun            #+#    #+#             */
-/*   Updated: 2024/03/01 16:34:52 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/03/01 17:06:40 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	take_fork(t_philo *philo)
 		return (print_error("Error\nFork can't be locked"), 1);
 	if (check_dead(philo))
 		return (pthread_mutex_unlock(&philo->l_fork), 1);
-	print_time("has taken a fork", philo->index, philo->vars, get_time());
+	print_time("has take a fork", philo->index, philo->vars, get_time());
 	if (philo->vars->count == 1)
 	{
 		while (!check_dead(philo))

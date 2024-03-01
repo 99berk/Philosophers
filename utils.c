@@ -6,7 +6,7 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 12:14:51 by bakgun            #+#    #+#             */
-/*   Updated: 2024/03/01 16:35:18 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/03/01 17:35:58 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	ft_atoi(char *num)
 	i = -1;
 	while (num[++i])
 	{
-		if (num[i] > '9' && num[i] > '0')
+		if (!(num[i] <= '9' && num[i] >= '0'))
 			return (0);
 		number = (number * 10) + (num[i] - 48);
 	}
