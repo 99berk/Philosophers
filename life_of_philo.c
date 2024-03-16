@@ -6,7 +6,7 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 14:55:25 by bakgun            #+#    #+#             */
-/*   Updated: 2024/03/01 17:06:40 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/03/16 12:41:59 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,9 @@ int	eat(t_philo *philo)
 		return (pthread_mutex_unlock(&philo->l_fork),
 			pthread_mutex_unlock(philo->r_fork), 1);
 	if (pthread_mutex_lock(&philo->vars->eat) != 0)
-		return (print_error("Error\nFork can't be locked"), 1);
+		return (print_error("Error\nFork can't be locked"),
+			pthread_mutex_unlock(&philo->l_fork),
+			pthread_mutex_unlock(philo->r_fork), 1);
 	philo->last_ate = get_time();
 	pthread_mutex_unlock(&philo->vars->eat);
 	pthread_mutex_unlock(&philo->l_fork);
