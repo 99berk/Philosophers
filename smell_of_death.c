@@ -28,7 +28,7 @@ void	*die(t_vars *vars, int index, int print)
 	if (check_dead(&vars->philos[0]))
 		return (NULL);
 	if (pthread_mutex_lock(&vars->death) != 0)
-		return (print_error("Error\nMutex can't be locked"), NULL);
+		return (print_error("Error\nMutex can't be locked"), vars->is_dead = 1, NULL);
 	vars->is_dead = 1;
 	die_time = get_time();
 	pthread_mutex_unlock(&vars->death);
@@ -67,7 +67,7 @@ void	*smell_of_death(void *arg)
 	while (1)
 	{
 		if (pthread_mutex_lock(&vars->death) != 0)
-			return (print_error("Error\nMutex can't be locked"), NULL);
+			return (print_error("Error\nMutex can't be locked"), die(vars, 0, 0), NULL);
 		if (vars->max_eat > -1)
 			if (ctrl_max_eat(vars))
 				return (pthread_mutex_unlock(&vars->death), die(vars, 0, 0), NULL);
