@@ -6,7 +6,7 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 11:55:37 by bakgun            #+#    #+#             */
-/*   Updated: 2024/03/01 16:29:42 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/03/22 10:42:26 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,30 +24,24 @@ int	set_max_eat(t_vars *vars, int argv)
 
 int	set_philo(int argc, char **argv, t_vars *vars)
 {
-	int	i;
-
 	vars->philos = NULL;
 	vars->num = 0;
 	if (ft_atoi(argv[1]) <= 0 || ft_atoi(argv[2]) <= 0
 		|| ft_atoi(argv[3]) <= 0 || ft_atoi(argv[4]) <= 0)
 		return (print_error("Invalid argument\nArgs must be positive int"), 0);
-	i = -1;
-	while (++i < ft_atoi(argv[1]))
+	vars->count = ft_atoi(argv[1]);
+	vars->time_to_die = ft_atoi(argv[2]);
+	vars->time_to_eat = ft_atoi(argv[3]);
+	vars->time_to_sleep = ft_atoi(argv[4]);
+	vars->start_time = get_time();
+	vars->is_dead = 0;
+	if (argc == 6)
 	{
-		vars->count = ft_atoi(argv[1]);
-		vars->time_to_die = ft_atoi(argv[2]);
-		vars->time_to_eat = ft_atoi(argv[3]);
-		vars->time_to_sleep = ft_atoi(argv[4]);
-		vars->start_time = get_time();
-		vars->is_dead = 0;
-		if (argc == 6)
-		{
-			if (set_max_eat(vars, ft_atoi(argv[5])) != 1)
-				return (print_error(ERR_MSG_POSITIVE), 0);
-		}
-		else
-			vars->max_eat = -1;
+		if (set_max_eat(vars, ft_atoi(argv[5])) != 1)
+			return (print_error(ERR_MSG_POSITIVE), 0);
 	}
+	else
+		vars->max_eat = -1;
 	return (1);
 }
 

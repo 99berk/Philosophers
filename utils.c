@@ -6,7 +6,7 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 12:14:51 by bakgun            #+#    #+#             */
-/*   Updated: 2024/03/01 17:35:58 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/03/22 12:24:03 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,19 @@
 #include <sys/time.h>
 #include "philo.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void	print_error(char *str)
 {
-	int	i;
+	int		i;
+	char	*tmp;
 
 	i = 0;
-	while (str[i])
+	tmp = ft_strjoin(str, "\n");
+	while (tmp[i])
 		i++;
-	write(2, str, i);
-	write(2, "\n", 1);
+	write(2, tmp, i);
+	free(tmp);
 }
 
 int	ft_atoi(char *num)
@@ -60,9 +63,9 @@ int	ft_usleep(size_t miliseconds, t_philo *philo)
 	start = get_time();
 	while ((get_time() - start) < miliseconds)
 	{
+		if (check_dead(philo) != 0)
+			break ;
 		usleep(100);
-		if (philo->vars->is_dead == 1)
-			return (1);
 	}
 	return (0);
 }

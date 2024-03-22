@@ -6,7 +6,7 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 14:55:36 by bakgun            #+#    #+#             */
-/*   Updated: 2024/03/16 17:25:08 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/03/22 11:47:17 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ void	*die(t_vars *vars, int index, int print)
 	if (check_dead(&vars->philos[0]))
 		return (NULL);
 	if (pthread_mutex_lock(&vars->death) != 0)
-		return (print_error("Error\nMutex can't be locked"), vars->is_dead = 1, NULL);
+		return (print_error("Error\nMutex can't be locked"),
+			vars->is_dead = 1, NULL);
 	vars->is_dead = 1;
 	die_time = get_time();
 	pthread_mutex_unlock(&vars->death);
@@ -67,10 +68,10 @@ void	*smell_of_death(void *arg)
 	while (1)
 	{
 		if (pthread_mutex_lock(&vars->death) != 0)
-			return (print_error("Error\nMutex can't be locked"), die(vars, 0, 0), NULL);
+			return (print_error(ERR_MSG), die(vars, 0, 0), NULL);
 		if (vars->max_eat > -1)
 			if (ctrl_max_eat(vars))
-				return (pthread_mutex_unlock(&vars->death), die(vars, 0, 0), NULL);
+				return (pthread_mutex_unlock(&vars->death), die(vars, 0, 0));
 		pthread_mutex_unlock(&vars->death);
 		vars->death_i = -1;
 		if (check_dead(&vars->philos[0]))
@@ -78,7 +79,7 @@ void	*smell_of_death(void *arg)
 		while (++vars->death_i < vars->count)
 		{
 			if (pthread_mutex_lock(&vars->eat) != 0)
-				return (print_error("Error\nMutex can't be locked"), die(vars, 0, 0), NULL);
+				return (print_error(ERR_MSG), die(vars, 0, 0), NULL);
 			time = get_time() - vars->philos[vars->death_i].last_ate;
 			pthread_mutex_unlock(&vars->eat);
 			if (time > vars->time_to_die)

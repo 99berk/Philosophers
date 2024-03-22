@@ -6,13 +6,13 @@
 #    By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/01 16:25:17 by bakgun            #+#    #+#              #
-#    Updated: 2024/03/01 18:06:22 by bakgun           ###   ########.fr        #
+#    Updated: 2024/03/22 12:17:01 by bakgun           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := philo
 
-FLAGS := -Wall -Wextra -Werror -pthread #-fsanitize=thread -g
+FLAGS := -Wall -Wextra -Werror -pthread # -fsanitize=thread -g
 
 CC := gcc
 GREEN := \033[0;32m
@@ -22,7 +22,8 @@ RESET := \033[0m
 SRC := philo.c \
     smell_of_death.c \
     life_of_philo.c \
-    utils.c
+    utils.c \
+	ft_strjoin.c
 
 OBJ = $(SRC:c=o)
 

@@ -6,7 +6,7 @@
 /*   By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 11:58:19 by bakgun            #+#    #+#             */
-/*   Updated: 2024/03/01 17:40:42 by bakgun           ###   ########.fr       */
+/*   Updated: 2024/03/22 11:46:55 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 <time_to_die> <time_to_eat> <time_to_sleep> \
 [number_of_times_each_philosopher_must_eat]"
 # define ERR_MSG_POSITIVE "Invalid argument\nArgs must be positive int"
+# define ERR_MSG "Error\nMutex can't be locked"
 
 # include <pthread.h>
 
@@ -48,6 +49,7 @@ typedef struct s_vars
 
 void	print_error(char *str);
 int		ft_atoi(char *num);
+char	*ft_strjoin(char const *s1, char const *s2);
 size_t	get_time(void);
 void	*life_of_philo(void *arg);
 int		ft_usleep(size_t miliseconds, t_philo *philo);
