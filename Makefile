@@ -6,13 +6,13 @@
 #    By: bakgun <bakgun@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/01 16:25:17 by bakgun            #+#    #+#              #
-#    Updated: 2024/03/22 12:17:01 by bakgun           ###   ########.fr        #
+#    Updated: 2024/03/22 13:23:02 by bakgun           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := philo
 
-FLAGS := -Wall -Wextra -Werror -pthread # -fsanitize=thread -g
+FLAGS := -Wall -Wextra -Werror -pthread # 
 
 CC := gcc
 GREEN := \033[0;32m
@@ -34,7 +34,7 @@ DELETE_OBJ = $(RED)Deleting Objects $(RESET)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@$(CC) $(SRC) -o $(NAME)
+	@$(CC) $(SRC) -o $(NAME) -fsanitize=thread -g
 
 %.o: %.c
 	@$(CC) $(FLAGS) -c $< -o $@
