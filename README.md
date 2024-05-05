@@ -16,7 +16,7 @@ The project simulates a scenario where a number of philosophers sit at a round t
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/99berk/42_philosophers.git`
+1. Clone the repository: `git clone https://github.com/99berk/Philosophers.git`
 2. Navigate to the project directory: `cd philosophers`
 3. Compile the program using the provided Makefile: `make`
 
